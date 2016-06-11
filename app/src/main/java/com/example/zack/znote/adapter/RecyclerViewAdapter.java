@@ -1,6 +1,9 @@
 package com.example.zack.znote.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Environment;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -12,10 +15,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.zack.znote.MainActivity;
 import com.example.zack.znote.R;
 import com.example.zack.znote.model.NotesCard;
+import com.example.zack.znote.util.BitmapWorkerTask;
 import com.example.zack.znote.util.DensityUtil;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -26,10 +32,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private Context mContext;
     // 添加图片的最小高度
     private final int mPicHeight;
+    private final Bitmap placeholderBitmap;
     public RecyclerViewAdapter(List<NotesCard> mDataSet, Context context) {
         this.mDataSet = mDataSet;
         this.mContext = context;
         this.mPicHeight = getImageHeight();
+        placeholderBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_photo_placeholder_dark);
     }
 
     /**
@@ -131,26 +139,39 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
      * 动态设置尺寸（根据 mPicHeight）和图片数量
      */
     private void bindImageView(NotesViewHolder holder, List<String> names) {
-        int w, h;
+        int width, height;
         ViewGroup.LayoutParams notesPhotoLayoutParams = holder.notesPhoto.getLayoutParams();
         switch (names.size()) {
             case 0:
                 break;
             case 1:
-                w = mPicHeight * 3;
-                h = mPicHeight * 2;
-                notesPhotoLayoutParams.height = h;
+                width = mPicHeight * 3;
+                height = mPicHeight * 2;
+                notesPhotoLayoutParams.height = height;
 
                 holder.notesPhoto.setTag(names.get(0));
-                holder.notesPhoto.setImageResource(R.drawable.xxy1);
- //               loadBitmap(holder.notesPhoto, names.get(0), w, h);
+ //               holder.notesPhoto.setImageResource(R.drawable.xxy1);
+                loadBitmap(holder.notesPhoto, names.get(0), width, height);
                 break;
             default:
                 break;
         }
     }
 
-    public void loadBitmap(ImageView imageView, String name, int w, int h) {
-
+    public void loadBitmap(ImageView imageView, String name, int width, int height) {
+        String path = mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator;
+        if (mContext instanceof MainActivity) {
+            MainActivity activity = (MainActivity)mContext;
+            Bitmap bitmap = activity.getBitmapFromMemCache(path + name);
+            if (bitmap != null) {
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                imageView.setImageBitmap(bitmap);
+            } else if (BitmapWorkerTask.cancelPotentialWork(name,imageView)) {
+                BitmapWorkerTask task = new BitmapWorkerTask(imageView, mContext);
+                BitmapWorkerTask.AsyncDrawable asyncDrawable = new BitmapWorkerTask.AsyncDrawable(mContext.getResources(),placeholderBitmap,task);
+                imageView.setImageDrawable(asyncDrawable);
+                task.execute(path + name, width,height);
+            }
+        }
     }
 }
