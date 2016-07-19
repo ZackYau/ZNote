@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity
     private final Object mDiskCacheLock = new Object();
     private static final int DISK_CACHE_SIZE = 1024 * 1024 * 10; // 10MB
     private static final String DISK_CACHE_SUBDIR = "thumbs";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
