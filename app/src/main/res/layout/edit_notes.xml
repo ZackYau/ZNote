@@ -8,13 +8,20 @@
     android:fitsSystemWindows="true"
     tools:context="com.example.zack.znote.EditActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/AppTheme"
+            android:background="@color/background_1"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+    </android.support.design.widget.AppBarLayout>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -84,9 +91,10 @@
     <RelativeLayout
         android:id="@+id/bottom_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
+        android:layout_height="@dimen/bottom_bar_height"
         android:layout_gravity="bottom"
-        android:background="?attr/colorPrimary"
+        android:background="@color/background_1"
+        android:elevation="6dp"
         android:minHeight="16dp"
         android:orientation="horizontal">
 
@@ -96,24 +104,37 @@
             android:layout_height="match_parent"
             android:gravity="center" />
 
-        <Button
-            android:id="@+id/btn_add"
-            android:layout_width="wrap_content"
+        <ImageButton
+            android:id="@+id/imgBtn_add"
+            android:layout_width="@dimen/bottom_bar_height"
             android:layout_height="match_parent"
+            android:src="@drawable/ic_add_box_white_24dp"
+            android:background="#00000000"
+            android:tint="@color/iconColor"
             android:layout_alignParentLeft="true"/>
 
-        <Button
-            android:id="@+id/btn_edit"
-            android:layout_width="wrap_content"
+        <ImageButton
+            android:id="@+id/imgBtn_add_etc"
+            android:layout_width="@dimen/bottom_bar_height"
             android:layout_height="match_parent"
+            android:src="@drawable/ic_more_horiz_white_24dp"
+            android:background="#00000000"
+            android:tint="@color/iconColor"
             android:layout_alignParentRight="true"/>
     </RelativeLayout>
 
     <include
-        layout="@layout/bottom_sheet"
+        android:id="@+id/bottom_sheet_add"
+        layout="@layout/bottom_sheet_add"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_behavior="@string/bottom_sheet_behavior" />
 
+    <include
+        android:id="@+id/bottom_sheet_add_etc"
+        layout="@layout/bottom_sheet_add_etc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_behavior="@string/bottom_sheet_behavior" />
 
 </android.support.design.widget.CoordinatorLayout>

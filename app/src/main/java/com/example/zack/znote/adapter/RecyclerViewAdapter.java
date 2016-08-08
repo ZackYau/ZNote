@@ -15,7 +15,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.zack.znote.MainActivity;
+import com.example.zack.znote.activity.MainActivity;
 import com.example.zack.znote.R;
 import com.example.zack.znote.model.NotesCard;
 import com.example.zack.znote.util.BitmapWorkerTask;

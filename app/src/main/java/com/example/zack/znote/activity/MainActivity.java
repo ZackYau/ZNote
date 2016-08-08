@@ -1,6 +1,7 @@
-package com.example.zack.znote;
+package com.example.zack.znote.activity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -25,6 +26,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.zack.znote.R;
 import com.example.zack.znote.adapter.RecyclerViewAdapter;
 import com.example.zack.znote.model.NotesCard;
 import com.example.zack.znote.util.DiskLruCache;
@@ -115,7 +117,8 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            Intent intent = new Intent(MainActivity.this, EditNotesActivity.class);
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);

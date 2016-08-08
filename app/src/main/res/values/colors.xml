@@ -3,4 +3,33 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="iconColor">#737373</color>
+
+    <color name="background_1">#FFFAFAFA</color>
+    <color name="background_2">#FFFE897F</color>
+    <color name="background_3">#FFFFD180</color>
+    <color name="background_4">#FFFFFF8D</color>
+    <color name="background_5">#FFCCFF90</color>
+    <color name="background_6">#FFA7FFEB</color>
+    <color name="background_7">#FF80D8FF</color>
+    <color name="background_8">#FFCFD8DC</color>
+
+    <color name="status_bar_1">#FFB1B1B1</color>
+    <color name="status_bar_2">#FFB15F58</color>
+    <color name="status_bar_3">#FFB19058</color>
+    <color name="status_bar_4">#FFB1B161</color>
+    <color name="status_bar_5">#FF8DB163</color>
+    <color name="status_bar_6">#FF73B1A3</color>
+    <color name="status_bar_7">#FF5895B1</color>
+    <color name="status_bar_8">#FF8F9598</color>
+
+    <color name="press_1">#FFEAEAEA</color>
+    <color name="press_2">#FFEF8177</color>
+    <color name="press_3">#FFEFC477</color>
+    <color name="press_4">#FFEFEF84</color>
+    <color name="press_5">#FFC0F088</color>
+    <color name="press_6">#FF9DF0DD</color>
+    <color name="press_7">#FF77CAEF</color>
+    <color name="press_8">#FFC2CACE</color>
+
 </resources>

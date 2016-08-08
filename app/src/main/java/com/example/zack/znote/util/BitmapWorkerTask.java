@@ -9,8 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.widget.ImageView;
 
-import com.example.zack.znote.MainActivity;
-import com.example.zack.znote.R;
+import com.example.zack.znote.activity.MainActivity;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
