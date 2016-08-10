@@ -14,6 +14,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MotionEvent;
@@ -24,6 +26,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.example.zack.znote.R;
 import com.example.zack.znote.adapter.ItemAdapter;
@@ -276,6 +279,8 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
     private void backgroundColor() {
         final Integer[] ids = {R.id.iv_color_1, R.id.iv_color_2, R.id.iv_color_3, R.id.iv_color_4, R.id.iv_color_5,
                 R.id.iv_color_6, R.id.iv_color_7, R.id.iv_color_8};
+        final Integer[] colorText = {R.string.color_name_1, R.string.color_name_2, R.string.color_name_3, R.string.color_name_4,
+                R.string.color_name_5, R.string.color_name_6, R.string.color_name_7, R.string.color_name_8};
         final List<Integer> idList = new ArrayList<>(Arrays.asList(ids));
         for (int id : ids) {
             findViewById(id).setOnClickListener(new View.OnClickListener() {
@@ -290,6 +295,24 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
                     imageView.setImageResource(R.drawable.ic_check_circle_white_36dp);
                     notes.setColorId(idList.indexOf(view.getId()) + 1);
                     initToolbar();
+                }
+            });
+            findViewById(id).setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    //显示颜色信息
+                    int colorId = notes.getColorId();
+                    final int[] locations = new int[2];
+                    view.getLocationOnScreen(locations);
+                    DisplayMetrics dm = getResources().getDisplayMetrics();
+                    String text = getResources().getString(colorText[idList.indexOf(view.getId())]);
+                    if (colorId == idList.indexOf(view.getId()) + 1) {
+                        text = text + " Selected";
+                    }
+                    Toast toast = Toast.makeText(EditNotesActivity.this, text, Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.TOP | Gravity.LEFT, locations[0] - dm.widthPixels / 15, locations[1] - dm.heightPixels / 8);
+                    toast.show();
+                    return true;
                 }
             });
         }
