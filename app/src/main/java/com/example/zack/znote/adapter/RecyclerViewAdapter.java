@@ -69,7 +69,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(NotesViewHolder holder, int position) {
-       // final int position = position;
+        final int pos = position;
         NotesCard card = mDataSet.get(position);
         String title = card.getTitle();
         String text = card.getText();
@@ -94,14 +94,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (onItemClickListener != null) {
+                    onItemClickListener.onItemClick(id, pos, v);
+                }
             }
         });
 
         holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                return false;
+                if (onItemClickListener != null) {
+                    onItemClickListener.onItemLongClick(id, pos);
+                }
+                return true;
             }
         });
     }
@@ -158,6 +163,13 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         }
     }
 
+    /**
+     * 根据文件名，绑定图片到 ImageView
+     * @param imageView 目标 ImageView
+     * @param name      图片文件名
+     * @param width     目标宽度
+     * @param height    目标高度
+     */
     public void loadBitmap(ImageView imageView, String name, int width, int height) {
         String path = mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator;
         if (mContext instanceof MainActivity) {
@@ -166,12 +178,27 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             if (bitmap != null) {
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setImageBitmap(bitmap);
-            } else if (BitmapWorkerTask.cancelPotentialWork(name,imageView)) {
+            } else if (BitmapWorkerTask.cancelPotentialWork(path + name,imageView)) {
                 BitmapWorkerTask task = new BitmapWorkerTask(imageView, mContext);
                 BitmapWorkerTask.AsyncDrawable asyncDrawable = new BitmapWorkerTask.AsyncDrawable(mContext.getResources(),placeholderBitmap,task);
                 imageView.setImageDrawable(asyncDrawable);
                 task.execute(path + name, width,height);
             }
         }
+    }
+
+
+    /**
+     * ViewHolder 点击事件监听对象
+     */
+    private OnItemClickListener onItemClickListener = null;
+
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        onItemClickListener = listener;
+    }
+
+    public interface OnItemClickListener {
+        void onItemClick(long noteId, int position, View view);
+        void onItemLongClick(long noteId, int position);
     }
 }

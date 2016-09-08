@@ -42,9 +42,9 @@
 
                 <ImageView
                     android:id="@+id/notes_photo"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:scaleType="centerInside"
+                    android:scaleType="fitCenter"
                     android:background="#eeeeee" />
             </LinearLayout>
 

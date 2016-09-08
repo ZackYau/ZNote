@@ -1,10 +1,18 @@
 package com.example.zack.znote.activity;
 
+import android.app.AlertDialog;
+import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
@@ -16,10 +24,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
@@ -32,16 +41,39 @@ import com.example.zack.znote.R;
 import com.example.zack.znote.adapter.ItemAdapter;
 import com.example.zack.znote.model.Item;
 import com.example.zack.znote.model.Notes;
+import com.example.zack.znote.util.BitmapUtil;
+import com.example.zack.znote.util.BitmapWorkerTask;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by Zack on 2016/7/19.
  */
 public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.OnItemClickListener,View.OnClickListener{
 
+    private static final int REQUEST_TAKE_PHOTO = 100;
+    private static final int REQUEST_CHOOSE_IMAGE = 101;
+    private static final int BUFFER_SIZE = 1024;
+    private String TAKE_PHOTO;
+    private String CHOOSE_IMAGE;
+    private String RECORDING;
+    private String LABELS;
+    private String CHECKBOXES;
+    private String DELETE;
+    private String COPY;
+    private String SEND;
+
+    private ImageView notesPhoto;
     private ImageButton imgBtnAdd;
     private ImageButton imgBtnAddEtc;
 
@@ -59,7 +91,12 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
     private BottomSheetBehavior bottomSheetAddEtcBehavior;
     private View bottomSheetAddEtc;
 
+
     private Notes notes;
+    private Bitmap placeHolderBitmap;
+    private String newImageName;
+    private int screenWidth;
+    private int screenHeight;
     int[] pressColors = {R.color.press_1, R.color.press_2, R.color.press_3, R.color.press_4,
             R.color.press_5, R.color.press_6, R.color.press_7, R.color.press_8};
 
@@ -68,6 +105,7 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.edit_notes);
 
+        notesPhoto = (ImageView) findViewById(R.id.notes_photo);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.edit_notes);
         rlBottomToolbar = (RelativeLayout) findViewById(R.id.bottom_toolbar);
         llBottomSheetAdd = (LinearLayout) findViewById(R.id.bottom_sheet_add);
@@ -78,9 +116,27 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         imgBtnAddEtc.setOnClickListener(this);
 
         notes = new Notes("", "", 1, System.currentTimeMillis(), "", 0);
+        initData();
         initBottomSheet();
         initToolbar();
+    }
 
+    /**
+     * 初始化数据
+     */
+    private void initData() {
+        TAKE_PHOTO = getResources().getString(R.string.action_take_photo);
+        CHOOSE_IMAGE = getResources().getString(R.string.action_choose_image);
+        RECORDING = getResources().getString(R.string.action_recording);
+        LABELS = getResources().getString(R.string.action_labels);
+        CHECKBOXES = getResources().getString(R.string.action_checkboxes);
+        DELETE = getResources().getString(R.string.action_delete);
+        COPY = getResources().getString(R.string.action_copy);
+        SEND = getResources().getString(R.string.action_send);
+        // 获取屏幕宽度
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        screenWidth = displayMetrics.widthPixels;
+        screenHeight = displayMetrics.heightPixels;
     }
 
     /**
@@ -174,6 +230,9 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_edit_notes, menu);
+        if (notes.getArchived() == 1) {
+            menu.findItem(R.id.action_archive).setIcon(R.drawable.ic_unarchive_white_24dp).setTitle(R.string.action_unarchive);
+        }
         for(int i = 0; i < menu.size(); i++){
             Drawable drawable = menu.getItem(i).getIcon();
             if(drawable != null) {
@@ -182,6 +241,17 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch (id) {
+            case R.id.action_remind:
+                reminderSetting();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -224,7 +294,39 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
 
     @Override
     public void onItemClick(Item item) {
+        String title = item.getTitle();
+        if (TAKE_PHOTO.equals(title)) {
+            takePhoto();
+        } else if (CHOOSE_IMAGE.equals(title)) {
+            chooseImage();
+        } else if (RECORDING.equals(title)) {
 
+        } else if (LABELS.equals(title)) {
+
+        } else if (CHECKBOXES.equals(title)) {
+
+        } else if (DELETE.equals(title)) {
+
+        } else if (COPY.equals(title)) {
+
+        } else if (SEND.equals(title)) {
+
+        }
+        bottomSheetAddBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        bottomSheetAddEtcBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+    }
+
+    /**
+     * 获取状态栏的高度
+     * @return 系统栏高度
+     */
+    public int getStatusBarHeight() {
+        int statusBarHeight = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            statusBarHeight = getResources().getDimensionPixelSize(resourceId);
+        }
+        return statusBarHeight;
     }
 
     public List<Item> updateItems(boolean type) {
@@ -251,6 +353,24 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
             bottomSheetAddBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         } else {
             super.onBackPressed();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode != RESULT_OK) {
+            return;
+        }
+        switch (requestCode) {
+            case REQUEST_TAKE_PHOTO:
+                addImageToNotes();
+                break;
+            case REQUEST_CHOOSE_IMAGE:
+                Uri uri = data.getData();
+                chooseImageToNotes(uri);
+                break;
+            default:
+                break;
         }
     }
 
@@ -318,4 +438,114 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         }
     }
 
+    private void reminderSetting() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    }
+
+    /**
+     * 根据当前时间生成文件名
+     */
+    private String getFilename() {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.CHINA).format(new Date());
+        return "JPEG_" + timeStamp + ".jpg";
+    }
+
+    /**
+     * 启动系统拍照程序
+     */
+    private void takePhoto() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        // 确认相机程序可用
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            File photoFile = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES), getFilename());
+            try {
+                photoFile.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            newImageName = photoFile.getName();
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoFile));
+            startActivityForResult(intent, REQUEST_TAKE_PHOTO);
+        }
+    }
+
+    /**
+     * 添加图片到记事
+     */
+    private void addImageToNotes() {
+        bindImageView();
+    }
+
+    /**
+     * 启动系统选择图片程序
+     */
+    private void chooseImage() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT, null);
+        intent.setType("image/*");
+        startActivityForResult(intent, REQUEST_CHOOSE_IMAGE);
+    }
+
+    /**
+     * 选择图片到记事
+     *
+     */
+    private void chooseImageToNotes(Uri uri) {
+        newImageName = getFilename();
+        String filePath = getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator + newImageName;
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(uri);
+            OutputStream fileStream = new FileOutputStream(filePath);
+            byte[] buf = new byte[BUFFER_SIZE];
+            int size;
+            while ((size = inputStream.read(buf)) > 0) {
+                fileStream.write(buf, 0, size);
+            }
+            inputStream.close();
+            fileStream.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        bindImageView();
+    }
+
+    /**
+     * 记事绑定图片的数据
+     */
+    private void bindImageView() {
+        placeHolderBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_photo_placeholder_dark);
+        List<String> names = new ArrayList<>();
+        names.add(newImageName);
+        switch (names.size()) {
+            case 0:
+                break;
+            case 1:
+                loadBitmap(names);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 根据文件名，加载图片数据
+     * @param names 图片名称
+     */
+    private void loadBitmap(List<String> names) {
+        String path = getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator + names.get(0);
+        ViewGroup.LayoutParams notesPhotoLayoutParams = notesPhoto.getLayoutParams();
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, options);
+        int width;
+        int height;
+        width = screenWidth;
+        height = width * options.outHeight / options.outWidth;
+        notesPhotoLayoutParams.height = height;
+        if (BitmapWorkerTask.cancelPotentialWork(path, notesPhoto)) {
+            BitmapWorkerTask task = new BitmapWorkerTask(notesPhoto, this);
+            BitmapWorkerTask.AsyncDrawable asyncDrawable = new BitmapWorkerTask.AsyncDrawable(getResources(),placeHolderBitmap,task);
+            notesPhoto.setImageDrawable(asyncDrawable);
+            task.execute(path, width, height);
+        }
+    }
 }

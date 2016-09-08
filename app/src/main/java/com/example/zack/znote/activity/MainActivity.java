@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener,RecyclerViewAdapter.OnItemClickListener {
 
     private RecyclerViewAdapter recyclerViewAdapter;
     private List<NotesCard> mDataSet;
@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity
         initData();
         recyclerViewAdapter = new RecyclerViewAdapter(mDataSet,this);
         recyclerView.setAdapter(recyclerViewAdapter);
+        recyclerViewAdapter.setOnItemClickListener(this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -149,6 +150,16 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
+    @Override
+    public void onItemClick(long noteId, int position, View view) {
+
+    }
+
+    @Override
+    public void onItemLongClick(long noteId, int position) {
+
+    }
+
     /**
      * 初始化内存缓存和磁盘缓存
      */
@@ -182,7 +193,7 @@ public class MainActivity extends AppCompatActivity
         List<String> list,list1;
         list = new ArrayList<>();
         list1 = new ArrayList<>();
-        list.add("IMG_20160607_122854.jpg");
+        list.add("JPEG_20160904_123518.jpg");
         list1.add("");
         NotesCard notesCard = new NotesCard(1,"Title","test",0xFFFF6D3F,list,list1);
         mDataSet.add(notesCard);

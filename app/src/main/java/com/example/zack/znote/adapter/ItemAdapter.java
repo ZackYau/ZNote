@@ -45,6 +45,7 @@ public class ItemAdapter extends RecyclerView.Adapter<ItemAdapter.ViewHolder> {
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.onItemClickListener = listener;
     }
+
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         public ImageView imageView;
