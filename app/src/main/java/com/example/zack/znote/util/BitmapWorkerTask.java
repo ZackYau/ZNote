@@ -33,6 +33,7 @@ public class BitmapWorkerTask extends AsyncTask<Object, Void, Bitmap> {
         path = String.valueOf(params[0]);
         int reqWidth = (int) params[1];
         int reqHeight = (int) params[2];
+        int rotate = (int) params[3];
         File file = new File(path);
         Bitmap bitmap = null;
         if (!file.exists()) {
@@ -44,7 +45,8 @@ public class BitmapWorkerTask extends AsyncTask<Object, Void, Bitmap> {
             bitmap = activity.getBitmapFromDiskCache(path);
         }
         if (bitmap == null) {
-            bitmap = BitmapUtil.decodeSampledBitmapFromFile(path, reqWidth, reqHeight);
+            bitmap = BitmapUtil.decodeSampledBitmapFromFile(path, reqWidth, reqHeight, rotate);
+            bitmap = BitmapUtil.rotateImage(bitmap, rotate);
         }
         if (context instanceof MainActivity) {
             MainActivity activity = (MainActivity) context;

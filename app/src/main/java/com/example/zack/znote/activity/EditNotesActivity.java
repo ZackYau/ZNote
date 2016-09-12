@@ -2,12 +2,12 @@ package com.example.zack.znote.activity;
 
 import android.app.AlertDialog;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -532,6 +532,7 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
      */
     private void loadBitmap(List<String> names) {
         String path = getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator + names.get(0);
+        int rotate = BitmapUtil.readImageDegree(path);
         ViewGroup.LayoutParams notesPhotoLayoutParams = notesPhoto.getLayoutParams();
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
@@ -540,12 +541,16 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         int height;
         width = screenWidth;
         height = width * options.outHeight / options.outWidth;
+        if((rotate / 90) % 2 != 0){
+            height = width * options.outWidth / options.outHeight;
+        }
         notesPhotoLayoutParams.height = height;
         if (BitmapWorkerTask.cancelPotentialWork(path, notesPhoto)) {
             BitmapWorkerTask task = new BitmapWorkerTask(notesPhoto, this);
             BitmapWorkerTask.AsyncDrawable asyncDrawable = new BitmapWorkerTask.AsyncDrawable(getResources(),placeHolderBitmap,task);
             notesPhoto.setImageDrawable(asyncDrawable);
-            task.execute(path, width, height);
+            task.execute(path, width, height, rotate);
         }
     }
+
 }

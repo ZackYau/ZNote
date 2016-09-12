@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.example.zack.znote.activity.MainActivity;
 import com.example.zack.znote.R;
 import com.example.zack.znote.model.NotesCard;
+import com.example.zack.znote.util.BitmapUtil;
 import com.example.zack.znote.util.BitmapWorkerTask;
 import com.example.zack.znote.util.DensityUtil;
 
@@ -174,6 +175,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         String path = mContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES) + File.separator;
         if (mContext instanceof MainActivity) {
             MainActivity activity = (MainActivity)mContext;
+            int rotate = BitmapUtil.readImageDegree(path);
             Bitmap bitmap = activity.getBitmapFromMemCache(path + name);
             if (bitmap != null) {
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -182,7 +184,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 BitmapWorkerTask task = new BitmapWorkerTask(imageView, mContext);
                 BitmapWorkerTask.AsyncDrawable asyncDrawable = new BitmapWorkerTask.AsyncDrawable(mContext.getResources(),placeholderBitmap,task);
                 imageView.setImageDrawable(asyncDrawable);
-                task.execute(path + name, width,height);
+                task.execute(path + name, width, height, rotate);
             }
         }
     }
