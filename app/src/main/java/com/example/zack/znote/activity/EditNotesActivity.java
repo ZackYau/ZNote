@@ -39,6 +39,9 @@ import android.widget.Toast;
 
 import com.example.zack.znote.R;
 import com.example.zack.znote.adapter.ItemAdapter;
+import com.example.zack.znote.db.ImageDB;
+import com.example.zack.znote.db.NotesDB;
+import com.example.zack.znote.model.Image;
 import com.example.zack.znote.model.Item;
 import com.example.zack.znote.model.Notes;
 import com.example.zack.znote.util.BitmapUtil;
@@ -91,8 +94,9 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
     private BottomSheetBehavior bottomSheetAddEtcBehavior;
     private View bottomSheetAddEtc;
 
-
+    private NotesDB notesDB;
     private Notes notes;
+    private ImageDB imageDB;
     private Bitmap placeHolderBitmap;
     private String newImageName;
     private int screenWidth;
@@ -115,7 +119,6 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         imgBtnAdd.setOnClickListener(this);
         imgBtnAddEtc.setOnClickListener(this);
 
-        notes = new Notes("", "", 1, System.currentTimeMillis(), "", 0);
         initData();
         initBottomSheet();
         initToolbar();
@@ -133,6 +136,11 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         DELETE = getResources().getString(R.string.action_delete);
         COPY = getResources().getString(R.string.action_copy);
         SEND = getResources().getString(R.string.action_send);
+
+        notesDB = notesDB.getInstance(this);
+        imageDB = ImageDB.getInstance(this);
+        notes = new Notes("a", "s", 1, System.currentTimeMillis(), "d", 0);
+        notesDB.insert(notes);
         // 获取屏幕宽度
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
         screenWidth = displayMetrics.widthPixels;
@@ -252,6 +260,11 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
     }
 
     @Override
@@ -473,6 +486,8 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
      * 添加图片到记事
      */
     private void addImageToNotes() {
+        Image image = new Image(notes.getId(), newImageName);
+        imageDB.insert(image);
         bindImageView();
     }
 
@@ -505,6 +520,8 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         } catch (Exception e) {
             e.printStackTrace();
         }
+        Image image = new Image(notes.getId(), newImageName);
+        imageDB.insert(image);
         bindImageView();
     }
 
@@ -512,9 +529,13 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
      * 记事绑定图片的数据
      */
     private void bindImageView() {
+        long notesId = notes.getId();
         placeHolderBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.ic_photo_placeholder_dark);
+        List<Image> imageList = imageDB.queryAll(notesId);
         List<String> names = new ArrayList<>();
-        names.add(newImageName);
+        for (Image image : imageList) {
+            names.add(image.getFilename());
+        }
         switch (names.size()) {
             case 0:
                 break;

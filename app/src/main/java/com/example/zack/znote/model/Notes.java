@@ -9,25 +9,25 @@ public class Notes {
     private String text;
     private int colorId;
     private long time;
-    private String tags;
+    private String labels;
     private int archived;
 
-    public Notes(long id, String title, String text, int colorId, long time, String tags, int archived) {
+    public Notes(long id, String title, String text, int colorId, long time, String labels, int archived) {
         this.id = id;
         this.title = title;
         this.text = text;
         this.colorId = colorId;
         this.time = time;
-        this.tags = tags;
+        this.labels = labels;
         this.archived = archived;
     }
 
-    public Notes(String title, String text, int colorId, long time, String tags, int archived) {
+    public Notes(String title, String text, int colorId, long time, String labels, int archived) {
         this.title = title;
         this.text = text;
         this.colorId = colorId;
         this.time = time;
-        this.tags = tags;
+        this.labels = labels;
         this.archived = archived;
     }
 
@@ -51,8 +51,8 @@ public class Notes {
         return time;
     }
 
-    public String getTags() {
-        return tags;
+    public String getLabels() {
+        return labels;
     }
 
     public int getArchived() {
@@ -79,8 +79,8 @@ public class Notes {
         this.time = time;
     }
 
-    public void setTags(String tags) {
-        this.tags = tags;
+    public void setLabels(String labels) {
+        this.labels = labels;
     }
 
     public void setArchived(int archived) {
