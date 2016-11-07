@@ -315,7 +315,7 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         } else if (RECORDING.equals(title)) {
 
         } else if (LABELS.equals(title)) {
-
+            showLabel();
         } else if (CHECKBOXES.equals(title)) {
 
         } else if (DELETE.equals(title)) {
@@ -574,4 +574,12 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         }
     }
 
+    /**
+     * 选择标签
+     */
+    private void showLabel() {
+        Intent intent = new Intent(this, LabelActivity.class);
+        intent.putExtra("notesId", notes.getId());
+        startActivity(intent);
+    }
 }

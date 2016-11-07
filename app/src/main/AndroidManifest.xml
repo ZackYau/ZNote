@@ -27,6 +27,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.MainActivity" />
         </activity>
+        <activity
+            android:name=".activity.LabelActivity"
+            android:label=""
+            android:parentActivityName=".activity.EditNotesActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".activity.EditNotesActivity" />
+        </activity>
     </application>
 
 </manifest>

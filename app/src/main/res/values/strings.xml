@@ -17,6 +17,7 @@
     <string name="action_copy">Make a copy</string>
     <string name="action_send">Send</string>
     <string name="action_labels">Labels</string>
+    <string name="add_label">Add label</string>
 
     <!--color name-->
     <string name="color_name_1">White</string>
