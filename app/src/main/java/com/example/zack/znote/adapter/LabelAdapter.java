@@ -21,7 +21,7 @@ import java.util.List;
 public class LabelAdapter extends RecyclerView.Adapter<LabelAdapter.ViewHolder> {
     private List<LabelItem> items;
     private OnItemClickListener onItemClickListener;
-    SparseBooleanArray checkStates=new SparseBooleanArray();
+    SparseBooleanArray checkStates = new SparseBooleanArray();
 
     public LabelAdapter(List<LabelItem> items, OnItemClickListener listener) {
         this.items = items;
@@ -66,7 +66,7 @@ public class LabelAdapter extends RecyclerView.Adapter<LabelAdapter.ViewHolder> 
         @Override
         public void onClick(View view) {
             if (onItemClickListener != null) {
-                onItemClickListener.onItemClick(view, labelItem);
+                onItemClickListener.onItemClick(view, labelItem, getLayoutPosition());
             }
         }
 
@@ -74,6 +74,9 @@ public class LabelAdapter extends RecyclerView.Adapter<LabelAdapter.ViewHolder> 
             this.labelItem = labelItem;
             this.textView.setText(labelItem.getTitle());
             this.checkBox.setTag(position);
+            if (labelItem.isChecked()) {
+                checkStates.put(position, true);
+            }
             this.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
@@ -92,6 +95,6 @@ public class LabelAdapter extends RecyclerView.Adapter<LabelAdapter.ViewHolder> 
     }
 
     public interface OnItemClickListener {
-        void onItemClick(View view, LabelItem item);
+        void onItemClick(View view, LabelItem item, int position);
     }
 }

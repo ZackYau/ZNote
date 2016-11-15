@@ -180,6 +180,7 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        toolbar.setNavigationOnClickListener(this);
     }
 
     /**
@@ -263,6 +264,11 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
     }
@@ -299,6 +305,9 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
                 imgBtnAdd.setBackgroundColor(00000000);
                 imgBtnAdd.setSelected(false);
                 bottomSheetAddBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+                break;
+            case -1:
+                onBackPressed();
                 break;
             default:
                 break;

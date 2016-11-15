@@ -1,5 +1,6 @@
 package com.example.zack.znote.activity;
 
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -20,9 +21,14 @@ import android.widget.TextView;
 
 import com.example.zack.znote.R;
 import com.example.zack.znote.adapter.LabelAdapter;
+import com.example.zack.znote.db.LabelDB;
+import com.example.zack.znote.db.NotesDB;
+import com.example.zack.znote.model.Label;
 import com.example.zack.znote.model.LabelItem;
+import com.example.zack.znote.model.Notes;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -36,7 +42,11 @@ public class LabelActivity extends AppCompatActivity implements LabelAdapter.OnI
     private RecyclerView recyclerView;
     private EditText editText;
     private List<LabelItem> labelItems;
+    private List<LabelItem> labelTempItems; //标签暂存空间
     private TextView tvNewLabel;
+    private Notes notes;
+    private NotesDB notesDB;
+    private LabelDB labelDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,16 +64,38 @@ public class LabelActivity extends AppCompatActivity implements LabelAdapter.OnI
         setListener();
     }
 
+    @Override
+    public void onBackPressed() {
+        updateNotesLabel();
+        super.onBackPressed();
+    }
+
     /**
      * 初始化数据
      */
     private void initData() {
+        Intent intent = getIntent();
+        long id = intent.getLongExtra("notesId", 0);
+
+        notesDB = notesDB.getInstance(this);
+        notes = notesDB.query(id);
+        labelDB = labelDB.getInstance(this);
+        List<Label> labelList = labelDB.queryAll();
+
         labelItems = new ArrayList<>();
-        LabelItem label = new LabelItem("aaaaa", false);
-        for (int i = 0; i < 40; i++)
-            labelItems.add(label);
-        labelItems.add(new LabelItem("bbbbb", false));
-        labelItems.add(new LabelItem("ccccc", false));
+        labelTempItems = new ArrayList<>();
+        String[] labelStr = notes.getLabels().split(",");
+        List<String> checkedLabels = Arrays.asList(labelStr);
+        boolean isChecked;
+        LabelItem labelItem;
+        for (Label label : labelList) {
+            isChecked = checkedLabels.contains(label.getTitle());
+            labelItem = new LabelItem(label.getTitle(), isChecked);
+            labelItems.add(labelItem);
+        }
+        if (!labelItems.isEmpty()) {
+            labelTempItems.addAll(labelItems);
+        }
         labelAdapter = new LabelAdapter(labelItems, this);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -90,12 +122,19 @@ public class LabelActivity extends AppCompatActivity implements LabelAdapter.OnI
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
     }
 
     @Override
-    public void onItemClick(View view, LabelItem item) {
+    public void onItemClick(View view, LabelItem item, int position) {
         CheckBox cbLabel = (CheckBox) view.findViewById(R.id.cb_label);
         cbLabel.setChecked(!cbLabel.isChecked());
+        labelTempItems.get(position).setChecked(cbLabel.isChecked());
     }
 
     private void setListener() {
@@ -112,8 +151,79 @@ public class LabelActivity extends AppCompatActivity implements LabelAdapter.OnI
 
             @Override
             public void afterTextChanged(Editable editable) {
-
+                updateLabelView(editable.toString());
             }
         });
+        llAddLabel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                String title = (String) tvNewLabel.getTag();
+                createNewLabel(title);
+            }
+        });
+    }
+
+    /**
+     * 新建一个标签
+     */
+    private void createNewLabel(String title) {
+        labelDB.insert(new Label(title));
+        editText.setText("");
+        labelItems.clear();
+        if (!labelTempItems.isEmpty()) {
+            labelItems.addAll(labelTempItems);
+        }
+        LabelItem labelItem = new LabelItem(title, true);
+        labelItems.add(0, labelItem);
+        labelTempItems.add(0, labelItem);
+        llAddLabel.setVisibility(View.GONE);
+        labelAdapter.notifyDataSetChanged();
+        updateNotesLabel();
+    }
+
+    /**
+     * 监测添加标签内容
+     */
+    private void updateLabelView(String newLabel) {
+        List<Label> labelList = labelDB.queryAllByKeyword(newLabel);
+        String[] labelStr = notes.getLabels().split(",");
+        List<String> checkedLabels = Arrays.asList(labelStr);
+        labelItems.clear();
+        boolean isChecked;
+        boolean flag = true;
+        LabelItem labelItem;
+        for (Label label : labelList) {
+            isChecked = checkedLabels.contains(label.getTitle());
+            labelItem = new LabelItem(label.getTitle(), isChecked);
+            labelItems.add(labelItem);
+            if (newLabel.equals(label.getTitle())) {
+                flag = false;
+            }
+        }
+        if (flag) {
+            llAddLabel.setVisibility(View.VISIBLE);
+            tvNewLabel.setText(getResources().getString(R.string.create_label) + "\"" + newLabel + "\"");
+            tvNewLabel.setTag(newLabel);
+        } else {
+            llAddLabel.setVisibility(View.GONE);
+        }
+        labelAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * 更新记事标签
+     */
+    private void updateNotesLabel() {
+        StringBuilder sb = new StringBuilder();
+        for (LabelItem labelItem : labelTempItems) {
+            if (labelItem.isChecked()) {
+                sb.append(labelItem.getTitle()).append(",");
+            }
+        }
+        if (sb.length() > 0) {
+            sb.deleteCharAt(sb.length() - 1);
+        }
+        notes.setLabels(sb.toString());
+        notesDB.update(notes);
     }
 }
