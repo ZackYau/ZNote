@@ -200,6 +200,9 @@ public class LabelActivity extends AppCompatActivity implements LabelAdapter.OnI
                 flag = false;
             }
         }
+        if (newLabel.equals("")) {
+            flag = false;
+        }
         if (flag) {
             llAddLabel.setVisibility(View.VISIBLE);
             tvNewLabel.setText(getResources().getString(R.string.create_label) + "\"" + newLabel + "\"");
@@ -215,6 +218,10 @@ public class LabelActivity extends AppCompatActivity implements LabelAdapter.OnI
      */
     private void updateNotesLabel() {
         StringBuilder sb = new StringBuilder();
+        if (labelItems.size() == labelTempItems.size()) {
+            labelTempItems.clear();
+            labelTempItems.addAll(labelItems);
+        }
         for (LabelItem labelItem : labelTempItems) {
             if (labelItem.isChecked()) {
                 sb.append(labelItem.getTitle()).append(",");

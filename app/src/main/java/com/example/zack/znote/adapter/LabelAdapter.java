@@ -70,7 +70,7 @@ public class LabelAdapter extends RecyclerView.Adapter<LabelAdapter.ViewHolder> 
             }
         }
 
-        public void setData(LabelItem labelItem, int position) {
+        public void setData(LabelItem labelItem, final int position) {
             this.labelItem = labelItem;
             this.textView.setText(labelItem.getTitle());
             this.checkBox.setTag(position);
@@ -88,6 +88,7 @@ public class LabelAdapter extends RecyclerView.Adapter<LabelAdapter.ViewHolder> 
                     } else {
                         checkStates.delete(pos);
                     }
+                    items.get(position).setChecked(isChecked);
                 }
             });
             this.checkBox.setChecked(checkStates.get(position, false));
