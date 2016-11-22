@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,6 +34,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.zack.znote.R;
@@ -46,6 +46,7 @@ import com.example.zack.znote.model.Item;
 import com.example.zack.znote.model.Notes;
 import com.example.zack.znote.util.BitmapUtil;
 import com.example.zack.znote.util.BitmapWorkerTask;
+import com.example.zack.znote.util.DensityUtil;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -83,6 +84,7 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
     //View
     private CoordinatorLayout coordinatorLayout;
     private RelativeLayout rlBottomToolbar;
+    private LinearLayout mLlLabel;
     private LinearLayout llBottomSheetAdd;
     private LinearLayout llBottomSheetAddEtc;
     private ItemAdapter itemAdapter;
@@ -107,10 +109,11 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.edit_notes);
+        setContentView(R.layout.activity_edit_notes);
 
         notesPhoto = (ImageView) findViewById(R.id.notes_photo);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.edit_notes);
+        mLlLabel = (LinearLayout) findViewById(R.id.notes_label);
         rlBottomToolbar = (RelativeLayout) findViewById(R.id.bottom_toolbar);
         llBottomSheetAdd = (LinearLayout) findViewById(R.id.bottom_sheet_add);
         llBottomSheetAddEtc = (LinearLayout) findViewById(R.id.bottom_sheet_add_etc);
@@ -139,7 +142,7 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
 
         notesDB = notesDB.getInstance(this);
         imageDB = ImageDB.getInstance(this);
-        notes = new Notes("a", "s", 1, System.currentTimeMillis(), "d", 0);
+        notes = new Notes("", "", 1, System.currentTimeMillis(), "", 0);
         notesDB.insert(notes);
         // 获取屏幕宽度
         DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
@@ -266,6 +269,8 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
     @Override
     protected void onResume() {
         super.onResume();
+        updateNotes();
+        updateLabels();
     }
 
     @Override
@@ -590,5 +595,37 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         Intent intent = new Intent(this, LabelActivity.class);
         intent.putExtra("notesId", notes.getId());
         startActivity(intent);
+    }
+
+    /**
+     * 选择标签
+     */
+    private void updateNotes() {
+        notes = notesDB.query(notes.getId());
+    }
+
+    /**
+     * 更新标签
+     */
+    private void updateLabels() {
+        String[] labels = notes.getLabels().split(",");
+        if (notes.getLabels().equals("")) {
+            mLlLabel.setVisibility(View.GONE);
+            return;
+        }
+        mLlLabel.setVisibility(View.VISIBLE);
+        mLlLabel.removeAllViews();
+        TextView tv;
+        for (String s : labels) {
+            tv = new TextView(this);
+            tv.setText(s);
+            int p = DensityUtil.dip2px(this, 1);
+            tv.setPadding(6 * p, p, 6 * p, p);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+            lp.setMargins(0, 0, 6 * p, 0);
+            tv.setBackgroundColor(ContextCompat.getColor(this, R.color.status_bar_1));
+            tv.setTextColor(ContextCompat.getColor(this, R.color.black));
+            mLlLabel.addView(tv, lp);
+        }
     }
 }

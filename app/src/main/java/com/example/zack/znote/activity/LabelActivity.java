@@ -18,6 +18,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.zack.znote.R;
 import com.example.zack.znote.adapter.LabelAdapter;
@@ -139,9 +140,12 @@ public class LabelActivity extends AppCompatActivity implements LabelAdapter.OnI
 
     private void setListener() {
         editText.addTextChangedListener(new TextWatcher() {
+            private CharSequence temp;
+            private int selectionStart;
+            private int selectionEnd;
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+                temp = charSequence;
             }
 
             @Override
@@ -152,6 +156,14 @@ public class LabelActivity extends AppCompatActivity implements LabelAdapter.OnI
             @Override
             public void afterTextChanged(Editable editable) {
                 updateLabelView(editable.toString());
+                selectionStart = editText.getSelectionStart();
+                selectionEnd = editText.getSelectionEnd();
+                if (temp.length() > 50) {
+                    Toast.makeText(LabelActivity.this, getResources().getString(R.string.create_label_toast), Toast.LENGTH_SHORT).show();
+                    editable.delete(selectionStart - 1, selectionEnd);
+                    int tempSelection = selectionStart;
+                    editText.setSelection(tempSelection);
+                }
             }
         });
         llAddLabel.setOnClickListener(new View.OnClickListener() {

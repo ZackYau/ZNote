@@ -32,4 +32,7 @@
     <color name="press_7">#FF77CAEF</color>
     <color name="press_8">#FFC2CACE</color>
 
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
+
 </resources>
