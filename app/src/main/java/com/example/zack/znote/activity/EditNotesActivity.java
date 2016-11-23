@@ -47,6 +47,7 @@ import com.example.zack.znote.model.Notes;
 import com.example.zack.znote.util.BitmapUtil;
 import com.example.zack.znote.util.BitmapWorkerTask;
 import com.example.zack.znote.util.DensityUtil;
+import com.example.zack.znote.widget.LabelsLayout;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -84,7 +85,7 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
     //View
     private CoordinatorLayout coordinatorLayout;
     private RelativeLayout rlBottomToolbar;
-    private LinearLayout mLlLabel;
+    private LabelsLayout llLabel;
     private LinearLayout llBottomSheetAdd;
     private LinearLayout llBottomSheetAddEtc;
     private ItemAdapter itemAdapter;
@@ -113,7 +114,7 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
 
         notesPhoto = (ImageView) findViewById(R.id.notes_photo);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.edit_notes);
-        mLlLabel = (LinearLayout) findViewById(R.id.notes_label);
+        llLabel = (LabelsLayout) findViewById(R.id.notes_label);
         rlBottomToolbar = (RelativeLayout) findViewById(R.id.bottom_toolbar);
         llBottomSheetAdd = (LinearLayout) findViewById(R.id.bottom_sheet_add);
         llBottomSheetAddEtc = (LinearLayout) findViewById(R.id.bottom_sheet_add_etc);
@@ -610,22 +611,27 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
     private void updateLabels() {
         String[] labels = notes.getLabels().split(",");
         if (notes.getLabels().equals("")) {
-            mLlLabel.setVisibility(View.GONE);
+            llLabel.setVisibility(View.GONE);
             return;
         }
-        mLlLabel.setVisibility(View.VISIBLE);
-        mLlLabel.removeAllViews();
-        TextView tv;
+        llLabel.setVisibility(View.VISIBLE);
+        llLabel.removeAllViews();
+        ViewGroup.MarginLayoutParams lp = new ViewGroup.MarginLayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        TextView textView;
         for (String s : labels) {
-            tv = new TextView(this);
-            tv.setText(s);
+            textView = new TextView(this);
+            textView.setText(s);
             int p = DensityUtil.dip2px(this, 1);
-            tv.setPadding(6 * p, p, 6 * p, p);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            lp.setMargins(0, 0, 6 * p, 0);
-            tv.setBackgroundColor(ContextCompat.getColor(this, R.color.status_bar_1));
-            tv.setTextColor(ContextCompat.getColor(this, R.color.black));
-            mLlLabel.addView(tv, lp);
+            textView.setPadding(6 * p, p, 6 * p, p);
+            textView.setBackgroundColor(ContextCompat.getColor(this, R.color.status_bar_1));
+            textView.setTextColor(ContextCompat.getColor(this, R.color.black));
+            textView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showLabel();
+                }
+            });
+            llLabel.addView(textView, lp);
         }
     }
 }

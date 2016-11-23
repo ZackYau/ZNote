@@ -71,21 +71,16 @@
                 android:hint="@string/notes_text"
                 android:textSize="16sp"/>
 
-            <LinearLayout
+            <com.example.zack.znote.widget.LabelsLayout
                 android:id="@+id/notes_label"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginEnd="@dimen/content_margin"
-                android:layout_marginLeft="@dimen/content_margin"
-                android:layout_marginRight="@dimen/content_margin"
-                android:layout_marginStart="@dimen/content_margin"
-                android:layout_marginTop="@dimen/content_margin"
-                android:background="?attr/selectableItemBackground"
-                android:gravity="start"
-                android:minHeight="16dp"
-                android:orientation="horizontal">
-            </LinearLayout>
+                android:layout_margin="@dimen/content_margin"
+                app:labelHorizontalSpace="8dp"
+                app:labelVerticalSpace="8dp" >
+
+            </com.example.zack.znote.widget.LabelsLayout>
+
         </LinearLayout>
     </ScrollView>
 
