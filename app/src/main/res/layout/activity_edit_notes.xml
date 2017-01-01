@@ -66,16 +66,26 @@
                 android:layout_marginLeft="@dimen/content_margin"
                 android:layout_marginRight="@dimen/content_margin"
                 android:layout_marginStart="@dimen/content_margin"
-                android:layout_marginBottom="50dp"
+                android:layout_marginBottom="@dimen/content_margin"
                 android:background="#00000000"
                 android:hint="@string/notes_text"
                 android:textSize="16sp"/>
+
+            <include
+                android:id="@+id/checkboxes_notes"
+                layout="@layout/checkboxes_notes"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
 
             <com.example.zack.znote.widget.LabelsLayout
                 android:id="@+id/notes_label"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/content_margin"
+                android:layout_marginEnd="@dimen/content_margin"
+                android:layout_marginLeft="@dimen/content_margin"
+                android:layout_marginRight="@dimen/content_margin"
+                android:layout_marginStart="@dimen/content_margin"
+                android:layout_marginBottom="60dp"
                 app:labelHorizontalSpace="8dp"
                 app:labelVerticalSpace="8dp" >
 

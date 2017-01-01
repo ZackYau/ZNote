@@ -21,6 +21,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
@@ -30,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -38,9 +40,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.zack.znote.R;
+import com.example.zack.znote.adapter.CheckboxesAdapter;
 import com.example.zack.znote.adapter.ItemAdapter;
 import com.example.zack.znote.db.ImageDB;
 import com.example.zack.znote.db.NotesDB;
+import com.example.zack.znote.helper.DefaultItemTouchHelperCallback;
+import com.example.zack.znote.helper.OnStartDragListener;
 import com.example.zack.znote.model.Image;
 import com.example.zack.znote.model.Item;
 import com.example.zack.znote.model.Notes;
@@ -64,7 +69,8 @@ import java.util.Locale;
 /**
  * Created by Zack on 2016/7/19.
  */
-public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.OnItemClickListener,View.OnClickListener{
+public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.OnItemClickListener,View.OnClickListener,
+        CheckboxesAdapter.OnItemClickListener, OnStartDragListener {
 
     private static final int REQUEST_TAKE_PHOTO = 100;
     private static final int REQUEST_CHOOSE_IMAGE = 101;
@@ -78,6 +84,7 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
     private String COPY;
     private String SEND;
 
+    private EditText notesText;
     private ImageView notesPhoto;
     private ImageButton imgBtnAdd;
     private ImageButton imgBtnAddEtc;
@@ -85,6 +92,7 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
     //View
     private CoordinatorLayout coordinatorLayout;
     private RelativeLayout rlBottomToolbar;
+    private LinearLayout llCheckboxesNotes;
     private LabelsLayout llLabel;
     private LinearLayout llBottomSheetAdd;
     private LinearLayout llBottomSheetAddEtc;
@@ -96,6 +104,12 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
     private RecyclerView recyclerViewAddEtc;
     private BottomSheetBehavior bottomSheetAddEtcBehavior;
     private View bottomSheetAddEtc;
+
+    private RecyclerView recyclerViewNoTick;
+    private CheckboxesAdapter checkboxesAdapter;
+    private ItemTouchHelper itemTouchHelper;
+    private LinearLayout llAddListItem;
+    private List<String> noTicklistItem;//未选择的列表数据
 
     private NotesDB notesDB;
     private Notes notes;
@@ -112,8 +126,10 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_notes);
 
+        notesText = (EditText) findViewById(R.id.notes_text);
         notesPhoto = (ImageView) findViewById(R.id.notes_photo);
         coordinatorLayout = (CoordinatorLayout) findViewById(R.id.edit_notes);
+        llCheckboxesNotes = (LinearLayout) findViewById(R.id.checkboxes_notes);
         llLabel = (LabelsLayout) findViewById(R.id.notes_label);
         rlBottomToolbar = (RelativeLayout) findViewById(R.id.bottom_toolbar);
         llBottomSheetAdd = (LinearLayout) findViewById(R.id.bottom_sheet_add);
@@ -125,6 +141,7 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
 
         initData();
         initBottomSheet();
+        initCheckboxes();
         initToolbar();
     }
 
@@ -170,6 +187,7 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         rlBottomToolbar.setBackgroundColor(backgroundColor);
         llBottomSheetAdd.setBackgroundColor(backgroundColor);
         llBottomSheetAddEtc.setBackgroundColor(backgroundColor);
+        checkboxesAdapter.setBackgroundColor(backgroundColor);
         // 系统版本大于5.0时才设置状态栏颜色
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -238,6 +256,26 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         itemAdapter = new ItemAdapter(updateItems(false), this);
         recyclerViewAddEtc.setAdapter(itemAdapter);
         itemAdapter.setOnItemClickListener(this);
+    }
+
+    /**
+     * 初始化 Checkboxes
+     */
+    private void initCheckboxes() {
+        recyclerViewNoTick = (RecyclerView) findViewById(R.id.recycler_view_list_noTick);
+        recyclerViewNoTick.setHasFixedSize(true);
+        recyclerViewNoTick.setLayoutManager(new LinearLayoutManager(this));
+        noTicklistItem = new ArrayList<>();
+        checkboxesAdapter = new CheckboxesAdapter(noTicklistItem, this);
+        recyclerViewNoTick.setAdapter(checkboxesAdapter);
+        checkboxesAdapter.setOnItemClickListener(this);
+        checkboxesAdapter.setOnStartDragListener(this);
+        itemTouchHelper = new ItemTouchHelper(new DefaultItemTouchHelperCallback(checkboxesAdapter));
+        itemTouchHelper.attachToRecyclerView(recyclerViewNoTick);
+
+        llAddListItem = (LinearLayout) findViewById(R.id.ll_add_list_item);
+        llAddListItem.setOnClickListener(this);
+        llCheckboxesNotes.setVisibility(View.GONE);
     }
 
     @Override
@@ -312,6 +350,12 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
                 imgBtnAdd.setSelected(false);
                 bottomSheetAddBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
                 break;
+            case R.id.ll_add_list_item:
+                noTicklistItem.add("");
+                checkboxesAdapter.notifyItemInserted(noTicklistItem.size());
+                recyclerViewNoTick.requestLayout();
+                llAddListItem.setVisibility(View.GONE);
+                break;
             case -1:
                 onBackPressed();
                 break;
@@ -332,7 +376,7 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         } else if (LABELS.equals(title)) {
             showLabel();
         } else if (CHECKBOXES.equals(title)) {
-
+            showCheckboxes();
         } else if (DELETE.equals(title)) {
 
         } else if (COPY.equals(title)) {
@@ -633,5 +677,64 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
             });
             llLabel.addView(textView, lp);
         }
+    }
+
+    @Override
+    public void onItemCheck(int position) {
+
+    }
+
+    @Override
+    public void onItemRemove(int position) {
+        if (position != 0) {
+            if (position == checkboxesAdapter.getItemCount() - 1) {
+                //移动到前一个位置
+                EditText editText = (EditText) recyclerViewNoTick.getLayoutManager().findViewByPosition(position - 1).findViewById(R.id.et_content);
+                if (editText != null) {
+                    editText.requestFocus();
+                }
+            } else {
+                //移动到后一个位置position + 1
+                EditText editText = (EditText) recyclerViewNoTick.getLayoutManager().findViewByPosition(position + 1).findViewById(R.id.et_content);
+                if (editText != null) {
+                    editText.requestFocus();
+                }
+            }
+        }
+        noTicklistItem.remove(position);
+        checkboxesAdapter.notifyItemRemoved(position);
+        llAddListItem.setVisibility(View.VISIBLE);
+        recyclerViewNoTick.requestLayout();
+    }
+
+    @Override
+    public void onItemTextChanged(int position) {
+        String item = noTicklistItem.get(position);
+        if (!item.equals(""))
+            llAddListItem.setVisibility(View.VISIBLE);
+    }
+
+    /**
+     * 开始拖动
+     * @param viewHolder
+     */
+    @Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        itemTouchHelper.startDrag(viewHolder);
+    }
+
+    /**
+     * 列表显示记事内容
+     */
+    private void showCheckboxes() {
+        noTicklistItem.clear();
+        String text = notesText.getText().toString();
+        String[] content = text.split("\n");
+        for (String s : content) {
+            noTicklistItem.add(s);
+        }
+        checkboxesAdapter.notifyDataSetChanged();
+        notesText.setVisibility(View.GONE);
+        llCheckboxesNotes.setVisibility(View.VISIBLE);
     }
 }

@@ -20,6 +20,7 @@
     <string name="add_label">Add label</string>
     <string name="create_label">Create</string>
     <string name="create_label_toast">Enter a shorter label name</string>
+    <string name="list_item">List item</string>
 
     <!--color name-->
     <string name="color_name_1">White</string>
