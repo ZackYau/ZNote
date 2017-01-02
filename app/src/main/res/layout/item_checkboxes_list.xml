@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="?attr/actionBarSize"
+    android:layout_height="wrap_content"
+    android:minHeight="@dimen/color_picker_width"
     android:gravity="center_vertical"
     android:orientation="horizontal" >
 
@@ -9,15 +10,16 @@
         android:id="@+id/iv_touch_move"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="@dimen/activity_horizontal_margin"
+        android:layout_marginLeft="@dimen/bottomsheet_horizontal_margin"
+        android:layout_marginStart="@dimen/bottomsheet_horizontal_margin"
+        android:layout_marginRight="@dimen/bottomsheet_vertical_margin"
+        android:layout_marginEnd="@dimen/bottomsheet_vertical_margin"
         android:tint="@color/iconColor" />
 
     <CheckBox
         android:id="@+id/cb_select"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/activity_horizontal_margin"
-        android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:background="?attr/selectableItemBackgroundBorderless" />
 
     <EditText
@@ -25,7 +27,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:layout_margin="5dp"
+        android:layout_marginLeft="@dimen/checkboxes_margin"
         android:background="#00000000"
         android:textSize="16sp" />
 
@@ -33,7 +35,12 @@
         android:id="@+id/ib_cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_marginLeft="@dimen/bottomsheet_horizontal_margin"
+        android:layout_marginStart="@dimen/bottomsheet_horizontal_margin"
+        android:layout_marginRight="@dimen/bottomsheet_horizontal_margin"
+        android:layout_marginEnd="@dimen/bottomsheet_horizontal_margin"
+        android:layout_marginTop="@dimen/bottomsheet_vertical_margin"
+        android:layout_marginBottom="@dimen/bottomsheet_vertical_margin"
         android:src="@drawable/ic_highlight_off_white_24dp"
         android:background="#00000000"
         android:tint="@color/iconColor" />

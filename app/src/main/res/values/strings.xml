@@ -21,6 +21,8 @@
     <string name="create_label">Create</string>
     <string name="create_label_toast">Enter a shorter label name</string>
     <string name="list_item">List item</string>
+    <string name="item_delete">Item deleted</string>
+    <string name="item_undo">UNDO</string>
 
     <!--color name-->
     <string name="color_name_1">White</string>

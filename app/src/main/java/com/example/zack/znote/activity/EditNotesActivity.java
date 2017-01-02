@@ -15,6 +15,7 @@ import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -118,6 +119,8 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
     private String newImageName;
     private int screenWidth;
     private int screenHeight;
+    private int deleteItemPosition;
+    private String deleteItemText;
     int[] pressColors = {R.color.press_1, R.color.press_2, R.color.press_3, R.color.press_4,
             R.color.press_5, R.color.press_6, R.color.press_7, R.color.press_8};
 
@@ -701,11 +704,26 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
                 }
             }
         }
+        deleteItemPosition = position;
+        deleteItemText = noTicklistItem.get(position);
         noTicklistItem.remove(position);
         checkboxesAdapter.notifyItemRemoved(position);
         llAddListItem.setVisibility(View.VISIBLE);
         recyclerViewNoTick.requestLayout();
+        String text = getResources().getString(R.string.item_delete);
+        String action = getResources().getString(R.string.item_undo);
+        Snackbar snackbar = Snackbar.make(coordinatorLayout, text, Snackbar.LENGTH_LONG).setAction(action, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                noTicklistItem.add(deleteItemPosition, deleteItemText);
+                checkboxesAdapter.notifyItemInserted(deleteItemPosition);
+                recyclerViewNoTick.requestLayout();
+            }
+        });
+        snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.background_3));
+        snackbar.show();
     }
+
 
     @Override
     public void onItemTextChanged(int position) {
@@ -729,12 +747,18 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
     private void showCheckboxes() {
         noTicklistItem.clear();
         String text = notesText.getText().toString();
-        String[] content = text.split("\n");
-        for (String s : content) {
-            noTicklistItem.add(s);
+        if (text.equals("")) {
+            noTicklistItem.add("");
+        } else {
+            text = text.replaceAll("^[\n]+", "");
+            String[] content = text.split("\n+");
+            for (String s : content) {
+                noTicklistItem.add(s);
+            }
         }
         checkboxesAdapter.notifyDataSetChanged();
         notesText.setVisibility(View.GONE);
         llCheckboxesNotes.setVisibility(View.VISIBLE);
+        recyclerViewNoTick.requestLayout();
     }
 }

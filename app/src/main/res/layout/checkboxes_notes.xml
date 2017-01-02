@@ -12,8 +12,10 @@
 
     <LinearLayout
         android:id="@+id/ll_add_list_item"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/bottomsheet_vertical_margin"
+        android:layout_marginBottom="@dimen/checkboxes_margin"
         android:gravity="center_vertical"
         android:orientation="horizontal" >
 
@@ -21,10 +23,10 @@
             android:id="@+id/imageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="@dimen/bottomsheet_horizontal_margin"
-            android:layout_marginLeft="@dimen/bottomsheet_horizontal_margin"
+            android:layout_marginLeft="@dimen/bottomsheet_list_item_height"
+            android:layout_marginStart="@dimen/bottomsheet_list_item_height"
             android:layout_marginRight="@dimen/bottomsheet_horizontal_margin"
-            android:layout_marginStart="@dimen/bottomsheet_horizontal_margin"
+            android:layout_marginEnd="@dimen/bottomsheet_horizontal_margin"
             android:src="@drawable/ic_add_black_24dp"
             android:tint="@color/iconColor"/>
 
@@ -42,6 +44,10 @@
         android:id="@+id/fakeShadow"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
+        android:layout_marginLeft="@dimen/bottomsheet_horizontal_margin"
+        android:layout_marginStart="@dimen/bottomsheet_horizontal_margin"
+        android:layout_marginRight="@dimen/bottomsheet_horizontal_margin"
+        android:layout_marginEnd="@dimen/bottomsheet_horizontal_margin"
         android:layout_marginTop="@dimen/nav_header_vertical_spacing"
         android:background="@drawable/shadow" />
 
