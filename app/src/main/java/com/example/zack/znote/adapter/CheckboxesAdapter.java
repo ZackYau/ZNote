@@ -2,6 +2,7 @@ package com.example.zack.znote.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -49,6 +50,7 @@ public class CheckboxesAdapter extends RecyclerView.Adapter<CheckboxesAdapter.Vi
         holder.imageView.setImageResource(R.drawable.ic_list_white_24dp);
         holder.checkBox.setChecked(false);
         holder.contentTextWatch.updatePosition(position);
+        //holder.editText.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
         holder.editText.setText(items.get(position));
         if (holder.editText.requestFocus()) {
             holder.imageButton.setVisibility(View.VISIBLE);
@@ -68,7 +70,7 @@ public class CheckboxesAdapter extends RecyclerView.Adapter<CheckboxesAdapter.Vi
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                if (onItemClickListener != null) {
+                if (onItemClickListener != null && b) {
                     onItemClickListener.onItemCheck(holder.getAdapterPosition());
                 }
             }

@@ -43,13 +43,16 @@ import android.widget.Toast;
 import com.example.zack.znote.R;
 import com.example.zack.znote.adapter.CheckboxesAdapter;
 import com.example.zack.znote.adapter.ItemAdapter;
+import com.example.zack.znote.adapter.UncheckItemAdapter;
 import com.example.zack.znote.db.ImageDB;
 import com.example.zack.znote.db.NotesDB;
 import com.example.zack.znote.helper.DefaultItemTouchHelperCallback;
 import com.example.zack.znote.helper.OnStartDragListener;
+import com.example.zack.znote.model.CheckItem;
 import com.example.zack.znote.model.Image;
 import com.example.zack.znote.model.Item;
 import com.example.zack.znote.model.Notes;
+import com.example.zack.znote.model.UncheckItem;
 import com.example.zack.znote.util.BitmapUtil;
 import com.example.zack.znote.util.BitmapWorkerTask;
 import com.example.zack.znote.util.DensityUtil;
@@ -71,7 +74,7 @@ import java.util.Locale;
  * Created by Zack on 2016/7/19.
  */
 public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.OnItemClickListener,View.OnClickListener,
-        CheckboxesAdapter.OnItemClickListener, OnStartDragListener {
+        CheckboxesAdapter.OnItemClickListener, OnStartDragListener, UncheckItemAdapter.OnItemClickListener {
 
     private static final int REQUEST_TAKE_PHOTO = 100;
     private static final int REQUEST_CHOOSE_IMAGE = 101;
@@ -112,6 +115,10 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
     private LinearLayout llAddListItem;
     private List<String> noTicklistItem;//未选择的列表数据
 
+    private RecyclerView recyclerViewTick;
+    private UncheckItemAdapter uncheckItemAdapter;
+    private List<CheckItem> tickListItem;
+
     private NotesDB notesDB;
     private Notes notes;
     private ImageDB imageDB;
@@ -119,8 +126,10 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
     private String newImageName;
     private int screenWidth;
     private int screenHeight;
-    private int deleteItemPosition;
-    private String deleteItemText;
+    private int deleteItemPosition; //记录删除未打钩选项的位置
+    private String deleteItemText; //记录删除未打钩选项文本
+    private int deleteTickItemPosition; //记录删除打钩选项的位置
+    private String deleteTickItemText; //记录删除打钩选项文本
     int[] pressColors = {R.color.press_1, R.color.press_2, R.color.press_3, R.color.press_4,
             R.color.press_5, R.color.press_6, R.color.press_7, R.color.press_8};
 
@@ -219,6 +228,7 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
 
         bottomSheetAdd = findViewById(R.id.bottom_sheet_add);
         bottomSheetAddBehavior = BottomSheetBehavior.from(bottomSheetAdd);
+        bottomSheetAddBehavior.setPeekHeight(0);
         bottomSheetAddBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -239,6 +249,7 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         recyclerViewAddEtc.setLayoutManager(new LinearLayoutManager(this));
         bottomSheetAddEtc = findViewById(R.id.bottom_sheet_add_etc);
         bottomSheetAddEtcBehavior = BottomSheetBehavior.from(bottomSheetAddEtc);
+        bottomSheetAddEtcBehavior.setPeekHeight(0);
         bottomSheetAddEtcBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
             public void onStateChanged(@NonNull View bottomSheet, int newState) {
@@ -279,6 +290,17 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         llAddListItem = (LinearLayout) findViewById(R.id.ll_add_list_item);
         llAddListItem.setOnClickListener(this);
         llCheckboxesNotes.setVisibility(View.GONE);
+
+        recyclerViewTick = (RecyclerView) findViewById(R.id.recycler_view_list_tick);
+        tickListItem = new ArrayList<>();
+        UncheckItem uncheckItem = new UncheckItem("Checked", tickListItem);
+        uncheckItemAdapter = new UncheckItemAdapter(this, Arrays.asList(uncheckItem));
+        recyclerViewTick.setAdapter(uncheckItemAdapter);
+        recyclerViewTick.setLayoutManager(new LinearLayoutManager(this));
+        uncheckItemAdapter.setOnItemClickListener(this);
+        if (tickListItem.size() == 0) {
+            recyclerViewTick.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -358,6 +380,9 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
                 checkboxesAdapter.notifyItemInserted(noTicklistItem.size());
                 recyclerViewNoTick.requestLayout();
                 llAddListItem.setVisibility(View.GONE);
+                if (tickListItem.size() > 0) {
+                    recyclerViewTick.setVisibility(View.VISIBLE);
+                }
                 break;
             case -1:
                 onBackPressed();
@@ -684,7 +709,13 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
 
     @Override
     public void onItemCheck(int position) {
-
+        tickListItem.add(0, new CheckItem(noTicklistItem.get(position)));
+        uncheckItemAdapter.notifyChildInserted(0, 0);
+        noTicklistItem.remove(position);
+        checkboxesAdapter.notifyItemRemoved(position);
+        llAddListItem.setVisibility(View.VISIBLE);
+        recyclerViewNoTick.requestLayout();
+        recyclerViewTick.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -760,5 +791,44 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
         notesText.setVisibility(View.GONE);
         llCheckboxesNotes.setVisibility(View.VISIBLE);
         recyclerViewNoTick.requestLayout();
+    }
+
+    @Override
+    public void onCheckItemCheck(int position) {
+        EditText editText = (EditText) recyclerViewTick.getLayoutManager().findViewByPosition(position).findViewById(R.id.et_content);
+        String text = editText.getText().toString();
+        noTicklistItem.add(text);
+        checkboxesAdapter.notifyItemInserted(noTicklistItem.size());
+        llAddListItem.setVisibility(View.VISIBLE);
+        recyclerViewNoTick.requestLayout();
+        tickListItem.remove(position - 1);
+        uncheckItemAdapter.notifyChildRemoved(0, position - 1);
+        if (tickListItem.size() == 0) {
+            recyclerViewTick.setVisibility(View.INVISIBLE);
+        }
+    }
+
+    @Override
+    public void onCheckItemRemove(int position) {
+        deleteTickItemPosition = position - 1;
+        EditText editText = (EditText) recyclerViewTick.getLayoutManager().findViewByPosition(position).findViewById(R.id.et_content);
+        deleteTickItemText = editText.getText().toString();
+        tickListItem.remove(position - 1);
+        uncheckItemAdapter.notifyChildRemoved(0, deleteTickItemPosition);
+        String text = getResources().getString(R.string.item_delete);
+        String action = getResources().getString(R.string.item_undo);
+        Snackbar snackbar = Snackbar.make(coordinatorLayout, text, Snackbar.LENGTH_LONG).setAction(action, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                tickListItem.add(deleteTickItemPosition, new CheckItem(deleteTickItemText));
+                uncheckItemAdapter.notifyChildInserted(0, deleteTickItemPosition);
+                recyclerViewTick.setVisibility(View.VISIBLE);
+            }
+        });
+        snackbar.setActionTextColor(ContextCompat.getColor(this, R.color.background_3));
+        snackbar.show();
+        if (tickListItem.size() == 0) {
+            recyclerViewTick.setVisibility(View.INVISIBLE);
+        }
     }
 }

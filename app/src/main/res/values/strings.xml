@@ -23,6 +23,7 @@
     <string name="list_item">List item</string>
     <string name="item_delete">Item deleted</string>
     <string name="item_undo">UNDO</string>
+    <string name="item_checked">Checked</string>
 
     <!--color name-->
     <string name="color_name_1">White</string>

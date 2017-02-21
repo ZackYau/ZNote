@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/bottomsheet_horizontal_margin"
+    android:layout_marginStart="@dimen/bottomsheet_horizontal_margin"
+    android:minHeight="@dimen/color_picker_width"
+    android:gravity="center_vertical"
+    android:orientation="horizontal" >
+
+    <CheckBox
+        android:id="@+id/cb_select"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/child_checked_margin"
+        android:layout_marginStart="@dimen/child_checked_margin"
+        android:background="?attr/selectableItemBackgroundBorderless" />
+
+    <EditText
+        android:id="@+id/et_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:layout_marginLeft="@dimen/checkboxes_margin"
+        android:background="#00000000"
+        android:textColor="@color/iconColor"
+        android:textSize="16sp" />
+
+    <ImageButton
+        android:id="@+id/ib_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="@dimen/bottomsheet_horizontal_margin"
+        android:layout_marginStart="@dimen/bottomsheet_horizontal_margin"
+        android:layout_marginRight="@dimen/bottomsheet_horizontal_margin"
+        android:layout_marginEnd="@dimen/bottomsheet_horizontal_margin"
+        android:layout_marginTop="@dimen/bottomsheet_vertical_margin"
+        android:layout_marginBottom="@dimen/bottomsheet_vertical_margin"
+        android:src="@drawable/ic_highlight_off_white_24dp"
+        android:background="#00000000"
+        android:tint="@color/iconColor" />
+
+</LinearLayout>

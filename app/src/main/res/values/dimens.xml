@@ -13,4 +13,6 @@
     <dimen name="bottom_bar_height">48dp</dimen>
     <dimen name="color_picker_width">40dp</dimen>
     <dimen name="checkboxes_margin">12dp</dimen>
+    <dimen name="parent_checked_margin">34dp</dimen>
+    <dimen name="child_checked_margin">32dp</dimen>
 </resources>
