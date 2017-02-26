@@ -22,8 +22,14 @@
     <string name="create_label_toast">Enter a shorter label name</string>
     <string name="list_item">List item</string>
     <string name="item_delete">Item deleted</string>
+    <string name="item_delete_all">items deleted</string>
     <string name="item_undo">UNDO</string>
     <string name="item_checked">Checked</string>
+    <string name="item_hide">Hide checkboxes</string>
+    <string name="item_unchecked">Uncheck all items</string>
+    <string name="item_delete_checked">Delete checked items</string>
+    <string name="hide_checkboxes_content">Delete checked items?</string>
+    <string name="action_keep">Keep</string>
 
     <!--color name-->
     <string name="color_name_1">White</string>

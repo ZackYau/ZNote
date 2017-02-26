@@ -48,15 +48,35 @@
                     android:background="#eeeeee" />
             </LinearLayout>
 
-            <EditText
-                android:id="@+id/notes_title"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/content_margin"
-                android:background="#00000000"
-                android:hint="@string/notes_title"
-                android:textSize="18sp"
-                android:textStyle="bold"/>
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/notes_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_margin="@dimen/content_margin"
+                    android:background="#00000000"
+                    android:hint="@string/notes_title"
+                    android:textSize="18sp"
+                    android:textStyle="bold"/>
+
+                <ImageButton
+                    android:id="@+id/ib_checkboxes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/content_margin"
+                    android:layout_marginEnd="@dimen/content_margin"
+                    android:layout_marginTop="@dimen/content_margin"
+                    android:layout_marginBottom="@dimen/content_margin"
+                    android:src="@drawable/ic_more_vert_white_24dp"
+                    android:background="#00000000"
+                    android:tint="@color/iconColor" />
+
+            </LinearLayout>
 
             <EditText
                 android:id="@+id/notes_text"
