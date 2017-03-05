@@ -931,6 +931,8 @@ public class EditNotesActivity extends AppCompatActivity implements ItemAdapter.
             builder.setCancelable(true);
             AlertDialog dialog = builder.create();
             dialog.show();
+            dialog.getButton(dialog.BUTTON_NEGATIVE).setTextColor(ContextCompat.getColor(this, R.color.black));
+            dialog.getButton(dialog.BUTTON_POSITIVE).setTextColor(ContextCompat.getColor(this, R.color.black));
         } else {
             checkboxesToText();
         }

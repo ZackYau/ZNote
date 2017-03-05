@@ -17,5 +17,5 @@ public interface ItemTouchHelperAdapter {
      * 滑动删除item
      * @param position The position of the item dismissed.
      */
-    void onItemDismiss(int position);
+    //void onItemDismiss(int position);
 }

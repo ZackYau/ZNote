@@ -43,7 +43,7 @@ public class DefaultItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        itemTouchHelperAdapter.onItemDismiss(viewHolder.getAdapterPosition());
+        //itemTouchHelperAdapter.onItemDismiss(viewHolder.getAdapterPosition());
     }
 
     @Override

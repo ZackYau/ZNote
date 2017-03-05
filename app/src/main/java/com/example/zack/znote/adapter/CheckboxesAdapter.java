@@ -109,11 +109,11 @@ public class CheckboxesAdapter extends RecyclerView.Adapter<CheckboxesAdapter.Vi
         return true;
     }
 
-    @Override
-    public void onItemDismiss(int position) {
-        items.remove(position);
-        notifyItemRemoved(position);
-    }
+//    @Override
+//    public void onItemDismiss(int position) {
+//        items.remove(position);
+//        notifyItemRemoved(position);
+//    }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
         this.onItemClickListener = listener;
